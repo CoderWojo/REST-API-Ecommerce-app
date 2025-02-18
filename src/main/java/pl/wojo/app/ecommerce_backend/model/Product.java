@@ -5,10 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "inventory")
+@Table(name = "product")
 public class Product {
     
     @Id
@@ -26,5 +27,10 @@ public class Product {
     private String long_description;
 
     @Column(name = "price", nullable = false)
-    private Integer price;
+    private Double price;
+
+    // Narazie dodam, kiedyś zmodyfikuję
+    // orphanRemoval = true, jeśli rodzic przestanie wskazywać na dziecko (np id_dziecka=null), to rekord dziecka zostanie usunięty
+    @OneToOne(mappedBy = "product", optional = false, orphanRemoval = true)
+    private Inventory inventory;
 }

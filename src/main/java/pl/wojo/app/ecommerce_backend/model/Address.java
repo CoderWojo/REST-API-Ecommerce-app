@@ -5,10 +5,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+// import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "inventory")
+@Table(name = "address")
 public class Address {
     
     @Id
@@ -16,8 +19,14 @@ public class Address {
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @Column(name = "user", nullable = false)
-    private LocalUser user;
+    // cascade=remove - "Gdy usunę obiekt tej encji, usuń również encję, do której on należy"
+    // orphanRemoval=true - "Jeśli obiekt z kolekcji zostanie usunięty, to usuń go również z bazy danych "
+    
+    // Encja przechowująca klucz obcy, jest encją nadrzędną
+    // właścicielem relacji jest Address
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private LocalUser user; 
 
     @Column(name = "addressLine1", nullable = false)
     private String addressLine1;
