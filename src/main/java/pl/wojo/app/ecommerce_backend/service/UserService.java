@@ -10,4 +10,8 @@ public interface UserService {
     List<LocalUser> findAll();
 
     LocalUser register(RegistrationBody registrationBody);
+
+    boolean checkEmailAlreadyExists(String email);
+
+    boolean checkUsernameAlreadyExists(String username);
 }

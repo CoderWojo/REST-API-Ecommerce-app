@@ -7,5 +7,7 @@ import pl.wojo.app.ecommerce_backend.model.LocalUser;
 
 @Repository
 public interface LocalUserRepository extends JpaRepository<LocalUser, Long> {
-    
+    boolean existsByEmailIgnoreCase(String email);
+
+    boolean existsByUsernameIgnoreCase(String username);
 }
