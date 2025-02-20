@@ -3,10 +3,13 @@ package pl.wojo.app.ecommerce_backend.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import pl.wojo.app.ecommerce_backend.api_model.LoginBody;
+import pl.wojo.app.ecommerce_backend.api_model.LoginResponse;
 import pl.wojo.app.ecommerce_backend.api_model.RegistrationBody;
 import pl.wojo.app.ecommerce_backend.model.LocalUser;
 import pl.wojo.app.ecommerce_backend.service.UserService;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,5 +33,12 @@ public class AuthenticationController {
             .body(savedUser);
     }
     
-    
+    @PostMapping("/login")
+    public ResponseEntity<LocalUser> login(LoginBody loginBody) {
+        LoginResponse response = userService.login(loginBody);
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + response.getJwt())
+            .body(response.getUser());
+    }
 }
