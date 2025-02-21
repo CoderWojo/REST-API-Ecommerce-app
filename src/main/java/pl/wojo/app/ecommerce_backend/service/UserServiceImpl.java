@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
         String email = loginBody.getEmail();
         String password = loginBody.getPassword();
 
-        Optional<LocalUser> opUser = repository.findByEmail(email);
+        Optional<LocalUser> opUser = repository.findByEmailIgnoreCase(email);
         LocalUser user = null;
         if(opUser.isPresent()) {
             // porownaj hasla
