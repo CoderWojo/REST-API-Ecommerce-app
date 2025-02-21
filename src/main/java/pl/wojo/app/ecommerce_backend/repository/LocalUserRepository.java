@@ -13,5 +13,5 @@ public interface LocalUserRepository extends JpaRepository<LocalUser, Long> {
 
     boolean existsByUsernameIgnoreCase(String username);
 
-    Optional<LocalUser> findByEmail(String email);
+    Optional<LocalUser> findByEmailIgnoreCase(String email);
 }
