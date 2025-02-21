@@ -1,11 +1,14 @@
 package pl.wojo.app.ecommerce_backend.service;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import pl.wojo.app.ecommerce_backend.api_model.LoginBody;
+import pl.wojo.app.ecommerce_backend.api_model.LoginResponse;
 import pl.wojo.app.ecommerce_backend.api_model.RegistrationBody;
 import pl.wojo.app.ecommerce_backend.exeption.EmailAlreadyExistsException;
+import pl.wojo.app.ecommerce_backend.exeption.IncorrectCredentialsException;
 import pl.wojo.app.ecommerce_backend.exeption.UsernameAlreadyExistsException;
 import pl.wojo.app.ecommerce_backend.model.LocalUser;
 import pl.wojo.app.ecommerce_backend.repository.LocalUserRepository;
@@ -13,20 +16,22 @@ import pl.wojo.app.ecommerce_backend.repository.LocalUserRepository;
 @Service
 public class UserServiceImpl implements UserService {
     private LocalUserRepository repository;
+    private EncryptionService encryptionService;
+    private JWTService jwtService;
 
-    public UserServiceImpl(LocalUserRepository repository) {
+    public UserServiceImpl(LocalUserRepository repository, 
+        EncryptionService encryptionService,
+        JWTService jwtService) {
         this.repository = repository;
-    }
-
-    @Override
-    public List<LocalUser> findAll() {
-        return repository.findAll();
+        this.encryptionService = encryptionService;
+        this.jwtService = jwtService;
     }
 
     @Override
     public LocalUser register(RegistrationBody registrationBody) {
         String email = registrationBody.getEmail();
         String username = registrationBody.getUsername();
+        String password = registrationBody.getPassword();
         boolean emailExists = repository.existsByEmailIgnoreCase(email);
         boolean usernameExists = repository.existsByUsernameIgnoreCase(username);
 
@@ -35,6 +40,10 @@ public class UserServiceImpl implements UserService {
         } else if(usernameExists) {
             throw new UsernameAlreadyExistsException(username);
         }
+
+        // TODO: Encode password
+        String encodedPassword = encryptionService.encode(password);
+        registrationBody.setPassword(encodedPassword);
 
         LocalUser user = registrationBodyToLocalUser(registrationBody);
         
@@ -60,5 +69,33 @@ public class UserServiceImpl implements UserService {
         .firstName(registrationBody.getFirstName())
         .lastName(registrationBody.getLastName())
         .build();
+    }
+
+    @Override
+    public LoginResponse login(LoginBody loginBody) throws IncorrectCredentialsException {
+        String email = loginBody.getEmail();
+        String password = loginBody.getPassword();
+
+        Optional<LocalUser> opUser = repository.findByEmail(email);
+        LocalUser user = null;
+        if(opUser.isPresent()) {
+            // porownaj hasla
+            String encryptedPassword = encryptionService.encode(password);
+            if(encryptedPassword.matches(opUser.get().getPassword())) {
+                // password is correct, dołącz JWT do response
+                user = opUser.get();
+                String jwt = jwtService.generateJWT(user);
+                LoginResponse loginResponse = new LoginResponse(user, jwt);
+
+                return loginResponse;
+
+            } else {
+                System.out.println("11111111111");
+                throw new IncorrectCredentialsException();
+            }
+        } else {
+            System.out.println("222222222222");
+            throw new IncorrectCredentialsException();
+        }
     }
 }
