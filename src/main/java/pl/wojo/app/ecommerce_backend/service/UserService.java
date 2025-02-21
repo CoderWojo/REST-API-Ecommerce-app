@@ -1,13 +1,13 @@
 package pl.wojo.app.ecommerce_backend.service;
 
-import java.util.List;
-
+import pl.wojo.app.ecommerce_backend.api_model.LoginBody;
+import pl.wojo.app.ecommerce_backend.api_model.LoginResponse;
 import pl.wojo.app.ecommerce_backend.api_model.RegistrationBody;
 import pl.wojo.app.ecommerce_backend.model.LocalUser;
 
 public interface UserService {
-    
-    List<LocalUser> findAll();
+
+    LoginResponse login(LoginBody loginBody);
 
     LocalUser register(RegistrationBody registrationBody);
 
