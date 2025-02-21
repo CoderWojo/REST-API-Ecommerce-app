@@ -34,7 +34,7 @@ public class AuthenticationController {
     }
     
     @PostMapping("/login")
-    public ResponseEntity<LocalUser> login(LoginBody loginBody) {
+    public ResponseEntity<LocalUser> login(@RequestBody LoginBody loginBody) {
         LoginResponse response = userService.login(loginBody);
 
         return ResponseEntity.ok()
